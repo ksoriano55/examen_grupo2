@@ -29,7 +29,6 @@ def on_select(event):
     if selected_item:
         # Obtiene los valores de la fila seleccionada
         item_values = tabla.item(selected_item, 'values')
-        print("Fila seleccionada:", item_values)
         _entry_referencia.delete(0, "end")
         _entry_referencia.insert(0,item_values[6])
         _entry_cuota.delete(0, "end")
@@ -40,22 +39,23 @@ def on_select(event):
 
 
 def consultar_cuotas():
+    print("01-Consultar Pagos----------")
     cliente_id = entry_cliente.get().zfill(8)
 
     if len(cliente_id) != 8:
         messagebox.showwarning("Advertencia", "El ID de cliente no es valido")
         return
     trama = f"01{cliente_id}"
+    print("Trama enviada a servidor: ", trama)
     respuesta = send_trama(trama)
+    print("Respuesta del servidor: ", respuesta)
     if respuesta:
         respuesta = respuesta[:-1]
         for item in tabla.get_children():
             tabla.delete(item)
 
         filas = respuesta.split("+")
-        print("fila: ", filas)
         data = []
-        print(respuesta)
         for t in filas:
             if t:
                 campos = t.split("$")
@@ -66,7 +66,7 @@ def consultar_cuotas():
                     dia = campos[4][0:2]
                     mes = campos[4][2:4]
                     anio = campos[4][4:8]
-                    fecha_cuota_pago = f"{dia}/{mes}/{anio}"## campos[4]
+                    fecha_cuota_pago = f"{dia}/{mes}/{anio}"
                     dia2 = campos[6][0:2]
                     mes2 = campos[6][2:4]
                     anio2 = campos[6][4:8]
@@ -80,7 +80,6 @@ def consultar_cuotas():
 
         
         for item in data:
-            print(item)
             tabla.insert("", "end", values=item)
 
     else:
@@ -89,7 +88,7 @@ def consultar_cuotas():
 
 
 def pagar_cuota():
-
+    print("02-Pagar Cuota----------")
     for item in tabla.get_children():
         cuota_tabla = int(tabla.item(item, 'values')[1])  
         estado_tabla = tabla.item(item, 'values')[5]  
@@ -104,22 +103,23 @@ def pagar_cuota():
     fecha = entry_fecha_pago.get()
     monto = str(int(Decimal(_entry_monto.get())*100)).zfill(9)
     referencia = _entry_referencia.get()
-    print("monto", monto)
     if len(cliente_id) != 8 or len(cuota) != 2 or len(fecha) != 8 or len(monto) != 9 or len(referencia) > 0:
         messagebox.showwarning("Advertencia", "Revisa los campos ingresados")
         return
 
     trama = f"02{cliente_id}{cuota}{fecha}{monto}"
+    print("Trama enviada al servidor: ", trama)
     respuesta = send_trama(trama)
+    print("Respuesta del servidor: ", respuesta)
     list_result = respuesta.split("$")
     mensaje_resp = f"Pago realizado: {list_result[1]}" if list_result[0] == "00" else "Error, no se pudo realizar el pago" 
-    print("respuesta trama pago: ", respuesta)
     consultar_cuotas()
     messagebox.showinfo("Respuesta del servidor", mensaje_resp)
 
 
 
 def revertir_pago():
+    print("03-Revertir Pago--------")
     cliente_id = entry_cliente.get().zfill(8)
     referencia = _entry_referencia.get()
 
@@ -127,7 +127,9 @@ def revertir_pago():
         messagebox.showwarning("Advertencia", "Revisa los campos ingresados")
         return
     trama = f"03{cliente_id}{referencia}"
+    print("Trama enviada al servidor: ", trama)
     respuesta = send_trama(trama)
+    print("Respuesta del servidor: ", respuesta)
     consultar_cuotas()
     if respuesta:
         messagebox.showinfo("Respuesta del servidor", f"{respuesta}")
