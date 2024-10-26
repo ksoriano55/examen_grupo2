@@ -1,4 +1,4 @@
-Grupo #2 SISTEMAS OPERATIVOS:
+Grupo #2 SISTEMAS ABIERTOS:
 Keyla Soriano
 Joshua Aguilar
 Jafeth Rapalo  
