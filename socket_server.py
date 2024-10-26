@@ -8,7 +8,7 @@ from mysql.connector import Error
 def ConexionDB():
     try:
         connection = mysql.connector.connect(
-            host="34.42.104.166", database="socket", user="admin", password="Admin.123"
+            host="", database="socket", user="admin", password="Admin.123"
         )
         return connection
     except Error as ex:
