@@ -89,6 +89,16 @@ def consultar_cuotas():
 
 
 def pagar_cuota():
+
+    for item in tabla.get_children():
+        cuota_tabla = int(tabla.item(item, 'values')[1])  
+        estado_tabla = tabla.item(item, 'values')[5]  
+        cuota_a_pagar = int(_entry_cuota.get()) if _entry_cuota.get().isdigit() and int(_entry_cuota.get()) > 0 else 0
+
+        if  (cuota_tabla < cuota_a_pagar or cuota_a_pagar == 0) and estado_tabla == "A":
+            messagebox.showwarning("Advertencia", f"Existe una cuota menor ({cuota_tabla}) en estado 'A'. No se puede efectuar el pago.")
+            return
+
     cliente_id = entry_cliente.get().zfill(8)
     cuota = _entry_cuota.get()
     fecha = entry_fecha_pago.get()
